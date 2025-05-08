@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import verifyEmailTemplate from "../utils/verifyEmailTemplate.js";
 export const registerUserController = async (request, response) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password } = request.body;
     if (!name || !email || !password) {
       return response.status(400).json({
         message: "Provide name, email, password",
@@ -35,7 +35,7 @@ export const registerUserController = async (request, response) => {
     const newUser = new UserModel(payload);
     const save = await newUser.save();
 
-    const verifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email?code=${save?._id}`;
+    const verifyEmailUrl = `${process.env.FRONTEND_URL}/verify-email?code=${save._id}`;
     const verifyEmail = await sendEmail({
       sendTo: email,
       subject: "Verify email from ApnaShop",

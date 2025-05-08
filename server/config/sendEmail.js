@@ -3,7 +3,7 @@ import dotenv from "dotenv"
 
 dotenv.config();
 if(process.env.RESEND_API){
-    alert(`Resend Email limit is reaches`)
+    console.log(`Resend Email limit is reaches`)
 }
 
 const resend = new Resend(process.env.RESEND_API);
