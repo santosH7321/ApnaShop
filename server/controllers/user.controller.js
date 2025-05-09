@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import verifyEmailTemplate from "../utils/verifyEmailTemplate.js";
 import { generatedAccessToken } from "../utils/generatedAccessToken.js";
 import { generatedRefreshToken } from "../utils/generatedRefreshToken.js";
+import { request, response } from "express";
+
 export const registerUserController = async (request, response) => {
   try {
     const { name, email, password } = request.body;
@@ -96,7 +98,6 @@ export const verifyEmailController = async (request, response) => {
 };
 
 // Login Controller
-
 export const loginController = async (request, response) => {
   try {
     const { email, password } = request.body;
@@ -161,3 +162,34 @@ export const loginController = async (request, response) => {
     });
   }
 };
+
+// Logout Controllers
+export const logoutController = async(request, response) => {
+  try {
+    const userid = request.userId // middleware
+
+
+    const cookiesOption = {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    };
+    response.clearCookie("accessToken", cookiesOption)
+    response.clearCookie("refreshToken", cookiesOption)
+
+    const removeRefreshToken = await UserModel.findByIdAndUpdate(userid, {
+      refresh_token : ""
+    })
+    return response.json({
+      message: "Logout succefully",
+      error: false,
+      success: true
+    })
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false
+    })
+  }
+}
