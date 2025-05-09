@@ -198,12 +198,20 @@ export const logoutController = async(request, response) => {
 
 export const uploadAvatar = async(request, response) => {
   try {
-    const image = request.file
+    const userId = request.userId // auth middleware
+    const image = request.file // multer middleware
     const upload = await uploadImageCloudnary(image);
 
+
+    const upadateUser = await UserModel.findByIdAndUpdate(userId, {
+      avatar: upload.url
+    })
     return response.json({
       message: "upload profile",
-      data: upload
+      data: {
+        _id: userId,
+        avatar: upload.url
+      }
     })
   } catch (error) {
     return response.status(500).json({
