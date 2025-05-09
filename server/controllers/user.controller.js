@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import verifyEmailTemplate from "../utils/verifyEmailTemplate.js";
 import { generatedAccessToken } from "../utils/generatedAccessToken.js";
 import { generatedRefreshToken } from "../utils/generatedRefreshToken.js";
-import { request, response } from "express";
+import uploadImageCloudnary from "../utils/uploadImageCloudnary.js";
 
 export const registerUserController = async (request, response) => {
   try {
@@ -184,6 +184,26 @@ export const logoutController = async(request, response) => {
       message: "Logout succefully",
       error: false,
       success: true
+    })
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false
+    })
+  }
+}
+
+// upload user avatar
+
+export const uploadAvatar = async(request, response) => {
+  try {
+    const image = request.file
+    const upload = await uploadImageCloudnary(image);
+
+    return response.json({
+      message: "upload profile",
+      data: upload
     })
   } catch (error) {
     return response.status(500).json({
