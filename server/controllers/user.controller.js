@@ -5,6 +5,8 @@ import verifyEmailTemplate from "../utils/verifyEmailTemplate.js";
 import { generatedAccessToken } from "../utils/generatedAccessToken.js";
 import { generatedRefreshToken } from "../utils/generatedRefreshToken.js";
 import uploadImageCloudnary from "../utils/uploadImageCloudnary.js";
+import { generateOtp } from "../utils/generatedOtp.js";
+import { forgotPasswordTemplate } from "../utils/forgotPasswordTemplet.js";
 
 export const registerUserController = async (request, response) => {
   try {
@@ -247,6 +249,61 @@ export const updateUserDetails = async(request, response) => {
       error: false,
       success: true,
       data: updateUser
+    })
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false
+    })
+  }
+}
+
+// Forgot Password
+
+export const forgotPasswordController = async(request, response) => {
+  try {
+    const { email } = request.body
+
+    if (!email) {
+      return response.status(400).json({
+        message: "Provide email",
+        error: true,
+        success: false
+      })
+    }
+
+    const user = await UserModel.findOne({ email })
+
+    if (!user) {
+      return response.status(400).json({
+        message: "Invalide email",
+        error: true,
+        success: false
+      })
+    }
+
+    const otp = generateOtp()
+    const expireTime = Date.now() + 30 * 60 * 1000 // 30 min
+
+    const update = await UserModel.findByIdAndUpdate(user._id, {
+      forgot_password_otp: otp,
+      forgot_password_expire: new Date(expireTime).toISOString()
+    })
+
+    await sendEmail({
+      sendTo: email,
+      subject: "Forgot password from ApnaShop",
+      html: forgotPasswordTemplate({
+        name: user.name,
+        otp: otp
+      })
+    })
+
+    return response.json({
+      message: "Forgot otp send to your email",
+      error: false,
+      success: true
     })
   } catch (error) {
     return response.status(500).json({
