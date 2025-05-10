@@ -8,6 +8,7 @@ import uploadImageCloudnary from "../utils/uploadImageCloudnary.js";
 import { generateOtp } from "../utils/generatedOtp.js";
 import { forgotPasswordTemplate } from "../utils/forgotPasswordTemplet.js";
 
+// signup route 
 export const registerUserController = async (request, response) => {
   try {
     const { name, email, password } = request.body;
@@ -65,7 +66,7 @@ export const registerUserController = async (request, response) => {
     });
   }
 };
-
+// Email varification link
 export const verifyEmailController = async (request, response) => {
   try {
     const { code } = request.body;
@@ -302,6 +303,64 @@ export const forgotPasswordController = async(request, response) => {
 
     return response.json({
       message: "Forgot otp send to your email",
+      error: false,
+      success: true
+    })
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false
+    })
+  }
+}
+
+// verify forgot password otp
+export const verifyForgotPasswordOtp = async(request, response) => {
+  try {
+    const { email, otp } = request.body
+    
+    if (!email || !otp) {
+      return response.status(400).json({
+        message: "Provide required field email, otp.",
+        error: true,
+        success: false
+      })
+    }
+
+    const user = await UserModel.findOne({ email })
+
+    if (!user) {
+      return response.status(400).json({
+        message: "Invalide user",
+        error: true,
+        success: false
+      })
+    }
+
+
+
+    const currentTime = new Date().toISOString()
+    if (user.forgot_password_expiry < currentTime) {
+      return response.status(400).json({
+        message: "Otp expired",
+        error: true,
+        success: false
+      })
+    }
+
+    if(otp !== user.forgot_password_otp) {
+      return response.status(400).json({
+        message: "Invalide otp",
+        error: true,
+        success: false
+      })
+    }
+
+    // if otp is not expired
+    // otp === user.forgot_password_otp
+    return response.json({
+      message: "Otp verified successfully",
       error: false,
       success: true
     })
