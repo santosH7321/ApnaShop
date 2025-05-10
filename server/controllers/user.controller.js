@@ -235,7 +235,7 @@ export const updateUserDetails = async(request, response) => {
       hashPassword = await bcrypt.hash(password, salt);
     } 
     
-    const updateUser = await UserModel.findByIdAndUpdate(userId, {
+    const updateUser = await UserModel.updateOne({ _id: userId}, {
       ...(name && { name: name}),
       ...(email && { email: email}),
       ...(mobile && { mobile: mobile}),
