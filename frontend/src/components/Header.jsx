@@ -1,30 +1,29 @@
 import React, { useState } from "react";
-import { RxCross2 } from "react-icons/rx"; 
+import { RxCross2 } from "react-icons/rx";
 import { LuMenu } from "react-icons/lu";
 import { FaShoppingCart } from "react-icons/fa";
 import logo from "../assets/logo.png";
+import { Link } from "react-router-dom";
+import Search from "./Search";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="h-20 shadow-md sticky top-0 bg-white z-50">
+    <header className="h-20 shadow-md sticky top-0 bg-white z-50 p-3">
       <div className="container mx-auto flex items-center justify-between h-full px-4">
         {/* Logo */}
-        <div className="flex items-center h-full">
-          <img src={logo} alt="Logo" className="w-32 sm:w-40 h-auto object-contain" />
-        </div>
+        <Link to={"/"} className="flex items-center h-full">
+          <img
+            src={logo}
+            alt="Logo"
+            className="w-32 sm:w-40 h-auto object-contain"
+          />
+        </Link>
 
         {/* Desktop Search */}
-        <div className="hidden md:flex items-center h-full flex-grow mx-6">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="border border-gray-300 rounded-l px-4 py-2 w-full max-w-md focus:outline-none"
-          />
-          <button className="bg-blue-500 text-white rounded-r px-4 py-2 hover:bg-blue-600">
-            Search
-          </button>
+        <div className="hidden lg:block">
+          <Search />
         </div>
 
         {/* Desktop Buttons */}
